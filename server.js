@@ -48,7 +48,8 @@ const PORT = 5000;
 // Connect to MongoDB Atlas
 client.connect()
   .then(() => {
-    db = client.db();
+    db = client.db("confession_app"); // ✅ this explicitly selects your intended DB
+
     console.log('✅ Connected to MongoDB');
   })
   .catch((err) => {
