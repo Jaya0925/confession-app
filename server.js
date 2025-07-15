@@ -32,7 +32,14 @@ const cors = require('cors');
 const { MongoClient } = require('mongodb');
 
 const uri = "mongodb+srv://jaya_user:PwxnhMNclWwS9p4J@cluster0.nlvpk3w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const client = new MongoClient(uri);
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: '1',
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
 let db;
 
 const app = express();
@@ -58,6 +65,7 @@ app.use(express.json());
 
 // POST /api/confess - Accept a new confession
 app.post('/api/confess', async (req, res) => {
+  if (!db) return res.status(503).json({ error: 'Database not connected yet' });
   const { message } = req.body;
   if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Message is required.' });
@@ -72,6 +80,7 @@ app.post('/api/confess', async (req, res) => {
 
 // GET /api/confessions - Return all confessions
 app.get('/api/confessions', async (req, res) => {
+  if (!db) return res.status(503).json({ error: 'Database not connected yet' });
   try {
     const data = await db.collection('confessions').find().sort({ date: -1 }).toArray();
     res.json(data);
