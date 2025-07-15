@@ -29,9 +29,24 @@ Frontend (src/ConfessionForm.jsx):
 
 const express = require('express');
 const cors = require('cors');
+const { MongoClient } = require('mongodb');
+
+const uri = "mongodb+srv://jaya_user:PwxnhMNclWwS9p4J@cluster0.nlvpk3w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const client = new MongoClient(uri);
+let db;
 
 const app = express();
 const PORT = 5000;
+
+// Connect to MongoDB Atlas
+client.connect()
+  .then(() => {
+    db = client.db();
+    console.log('✅ Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err);
+  });
 
 // Enable CORS for all origins
 app.use(cors({
@@ -41,22 +56,28 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// In-memory storage for confessions
-const confessions = [];
-
 // POST /api/confess - Accept a new confession
-app.post('/api/confess', (req, res) => {
+app.post('/api/confess', async (req, res) => {
   const { message } = req.body;
   if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Message is required.' });
   }
-  confessions.push({ message, timestamp: Date.now() });
-  res.status(201).json({ success: true });
+  try {
+    await db.collection('confessions').insertOne({ message, date: new Date() });
+    res.status(201).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save confession.' });
+  }
 });
 
 // GET /api/confessions - Return all confessions
-app.get('/api/confessions', (req, res) => {
-  res.json(confessions);
+app.get('/api/confessions', async (req, res) => {
+  try {
+    const data = await db.collection('confessions').find().sort({ date: -1 }).toArray();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch confessions.' });
+  }
 });
 
 // Start the server
