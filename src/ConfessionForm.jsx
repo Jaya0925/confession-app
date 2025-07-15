@@ -1,7 +1,7 @@
 // Confession Form (Frontend)
 // To start: npm run dev
 // Test: http://localhost:5173
-// Backend API: http://localhost:5000
+// Backend API: https://confession-app-rl3h.onrender.com
 
 import React, { useState } from 'react';
 import './index.css';
