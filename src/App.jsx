@@ -26,7 +26,7 @@ function App() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('http://localhost:5000/api/confessions');
+        const res = await fetch('https://confession-app-rl3h.onrender.com/api/confessions');
         if (!res.ok) {
           let data = {};
           try {

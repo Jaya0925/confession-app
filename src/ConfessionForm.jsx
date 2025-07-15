@@ -43,7 +43,7 @@ export default function ConfessionForm() {
     setWarning('');
     try {
       // POST to backend API
-      const res = await fetch('http://localhost:5000/api/confess', {
+      const res = await fetch('https://confession-app-rl3h.onrender.com/api/confess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
